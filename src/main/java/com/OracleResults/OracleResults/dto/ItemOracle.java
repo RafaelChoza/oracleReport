@@ -35,6 +35,9 @@ public class ItemOracle {
     @Column(name = "quantity_scrapped", nullable = true)
     private Integer quantityScrapped;
 
+    @Column(name = "yield", nullable = true)
+    private Double yield;
+
     @Column(name = "quantity_remaining", nullable = true)
     private Integer quantityRemaining;
 
@@ -51,7 +54,7 @@ public class ItemOracle {
     private String extraColumn;
 
     public ItemOracle(Long id, String job, String status, String type, String jobClass, String assembly,
-            String assemblyDescription, Integer quantity, Integer quantityCompleted,
+            String assemblyDescription, Integer quantity, Integer quantityCompleted, Double yield,
             Integer quantityScrapped, Integer quantityRemaining, String startDate,
             String dateCompleted, String dateClosed, String extraColumn) {
         this.id = id;
@@ -63,6 +66,7 @@ public class ItemOracle {
         this.assemblyDescription = assemblyDescription;
         this.quantity = quantity;
         this.quantityCompleted = quantityCompleted;
+        this.yield = yield;
         this.quantityScrapped = quantityScrapped;
         this.quantityRemaining = quantityRemaining;
         this.startDate = startDate;

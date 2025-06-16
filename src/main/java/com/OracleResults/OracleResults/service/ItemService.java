@@ -31,14 +31,28 @@ public class ItemService {
             String type,
             String assembly,
             String assemblyDescription,
-            Integer quantityMin,
-            Integer quantityMax,
+            String quantityMin,
+            String quantityMax,
             String dateStart,
-            String dateEnd) {
+            String dateEnd,
+            String assemblyStartingWith,
+            String jobEndingWith) {
         Specification<ItemOracle> spec = ItemSpecification.filterItems(job, type, assembly, assemblyDescription,
-                quantityMin, quantityMax, dateStart, dateEnd);
-
-                System.out.println("Se reciben los parametros: " + job + type + assembly + assemblyDescription + quantityMin + quantityMax + dateStart + dateEnd);
+                quantityMin, quantityMax, dateStart, dateEnd, assemblyStartingWith, jobEndingWith);
+                job = job != null && !job.isBlank() ? job : null;
+                type = type != null && !type.isBlank() ? type : null;
+                assembly = assembly != null && !assembly.isBlank() ? assembly : null;
+                assemblyDescription = assemblyDescription != null && !assemblyDescription.isBlank() ? assemblyDescription : null;
+                quantityMin = quantityMin != null && !quantityMin.isBlank() ? quantityMin : "";
+                quantityMax = quantityMax != null && !quantityMax.isBlank() ? quantityMax : "";
+                dateStart = dateStart != null && !dateStart.isBlank() ? dateStart : null;
+                dateEnd = dateEnd != null && !dateEnd.isBlank() ? dateEnd : null;
+                assemblyStartingWith = assemblyStartingWith != null && !assemblyStartingWith.isBlank() ? assemblyStartingWith : null;
+                jobEndingWith = jobEndingWith != null && !jobEndingWith.isBlank() ? jobEndingWith : null;
+                
+                Integer quantityMinInt = (quantityMin != null && !quantityMin.isBlank()) ? Integer.parseInt(quantityMin) : 0;
+                Integer quantityMaxInt = (quantityMax != null && !quantityMax.isBlank()) ? Integer.parseInt(quantityMax) : 0;
+                System.out.println("Se reciben los parametros: " + job + type + assembly + assemblyDescription + quantityMinInt + quantityMaxInt + dateStart + dateEnd);
         return itemRepository.findAll(spec);
     }
 }

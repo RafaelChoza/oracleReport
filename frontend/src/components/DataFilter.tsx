@@ -1,7 +1,10 @@
 import { useState } from "react";
+import type { ItemOracleType } from "../Types";
+import { useData } from "./GetData";
 
 export default function DataFilter() {
-    const [data, setData] = useState([])
+    const { info } = useData()
+    const [dataDB, setDataDB] = useState<ItemOracleType[]>([])
     const [formData, setFormData] = useState({
         id: "",
         job: "",
@@ -22,25 +25,42 @@ export default function DataFilter() {
         dateCompleted: "",
         dateClosed: "",
         extraColumn: "",
+        assemblyStartingWith: "",
     });
 
+    const assemblyUniq = Array.from(new Set(info.map((item) => item.assembly)));
+    const assemblySorted = assemblyUniq.sort((a, b) => Number(a) - Number(b))
+
+
+
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value, type } = e.target;
+
         setFormData({
             ...formData,
-            [e.target.name]: e.target.value,
+            [name]: type === "number" ? Number(value) : value,
         });
     };
+
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         console.log(formData)
+        const params = new URLSearchParams();
+        Object.entries(formData).forEach(([key, value]) => {
+            if (value !== "" && value !== 0 && value !== null) {
+                params.append(key, value.toString());
+            }
+        });
+        console.log(params)
         try {
-            const response = await fetch(`http://localhost:8080/search?job=${formData.job}&type=${formData.type}&assembly=${formData.assembly}&assemblyDescription=${formData.assemblyDescription}&quantityMin=${formData.quantityMin}&quantityMax=${formData.quantityMax}&dateStart=${formData.dateStart}&dateEnd=${formData.dateEnd}`, {
+            const response = await fetch(`http://localhost:8080/search?${params.toString()}`, {
                 method: "GET"
             })
             const data = await response.json()
-            setData(data)
+            setDataDB(data)
             console.log("Datos recibidos")
+            console.log(data)
         } catch (error) {
 
         }
@@ -68,17 +88,39 @@ export default function DataFilter() {
                         <input
                             className="w-full border border-cyan-500 p-2 bg-gray-800 text-cyan-300 text-sm rounded shadow-[inset_0_0_5px_rgba(0,255,255,0.3)] mb-2"
                             type="text"
-                            name="type"
-                            placeholder="Tipo de orden"
+                            name="jobEndingWith"
+                            placeholder="Numero de Orden termina con"
                             onChange={handleChange}
                         />
                         <input
                             className="w-full border border-cyan-500 p-2 bg-gray-800 text-cyan-300 text-sm rounded shadow-[inset_0_0_5px_rgba(0,255,255,0.3)] mb-2"
                             type="text"
-                            name="assembly"
-                            placeholder="Numero de parte"
+                            name="type"
+                            placeholder="Tipo de orden"
                             onChange={handleChange}
                         />
+                        <select
+                            className="w-full border border-cyan-500 p-2 bg-gray-500 text-cyan-300 text-sm rounded shadow-[0_0_5px_rgba(0,255,255,0.3)] mb-2"
+                            name="assembly"
+                            value={formData.assembly} // Agrega el estado del valor seleccionado
+                            onChange={(e) => setFormData({ ...formData, assembly: e.target.value })} // Maneja cambios
+                        >
+                            <option className="text-white" value="" disabled>Selecciona una opción</option>
+                            {assemblySorted.map((assembly) => (
+                                <option key={assembly} className="text-black" value={assembly}>
+                                    {assembly}
+                                </option>
+                            ))}
+                        </select>
+
+                        <input
+                            className="w-full border border-cyan-500 p-2 bg-gray-800 text-cyan-300 text-sm rounded shadow-[inset_0_0_5px_rgba(0,255,255,0.3)] mb-2"
+                            type="text"
+                            name="assemblyStartingWith"
+                            placeholder="Numero de parte empieza con"
+                            onChange={handleChange}
+                        />
+
                         <input
                             className="w-full border border-cyan-500 p-2 bg-gray-800 text-cyan-300 text-sm rounded shadow-[inset_0_0_5px_rgba(0,255,255,0.3)] mb-2"
                             type="text"
@@ -88,7 +130,7 @@ export default function DataFilter() {
                         />
                         <input
                             className="w-full border border-cyan-500 p-2 bg-gray-800 text-cyan-300 text-sm rounded shadow-[inset_0_0_5px_rgba(0,255,255,0.3)] mb-2"
-                            type="text"
+                            type="number"
                             name="quantity"
                             placeholder="Cantidad surtida"
                             onChange={handleChange}
@@ -146,7 +188,44 @@ export default function DataFilter() {
                 </section>
 
 
+
             </div>
+            <section>
+                {dataDB.length > 0 ? (
+                    <>
+                        <p className="text-gray-400">Total de registros: {dataDB.length}</p>
+
+                        {/* Calcular sumatorias */}
+                        <p className="text-cyan-400 font-bold">
+                            Total Quantity: {dataDB.reduce((sum, dato) => sum + dato.quantity, 0)}
+                        </p>
+                        <p className="text-green-400 font-bold">
+                            Total Quantity Completed: {dataDB.reduce((sum, dato) => sum + dato.quantityCompleted, 0)}
+                        </p>
+
+                        {/* División de la suma total de quantityCompleted entre quantity */}
+                        <p className="text-yellow-400 font-bold">
+                            Ratio: {dataDB.reduce((sum, dato) => sum + dato.quantity, 0) > 0
+                                ? (dataDB.reduce((sum, dato) => sum + dato.quantityCompleted, 0)*100 /
+                                    dataDB.reduce((sum, dato) => sum + dato.quantity, 0)).toFixed(2)
+                                : "N/A"}%
+                        </p>
+
+                        {dataDB.map((dato) => (
+                            <p key={dato.id}>
+                                {dato.job} - {dato.assembly} - {dato.quantity} - {dato.quantityCompleted} -
+                                {(Number(dato.yield) * 100).toFixed(2)}% -
+                                
+                            </p>
+                        ))}
+                    </>
+                ) : (
+                    <p>No hay datos con esos criterios de búsqueda</p>
+                )}
+            </section>
+
+
+
         </div>
     );
 }

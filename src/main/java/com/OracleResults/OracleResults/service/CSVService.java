@@ -43,19 +43,35 @@ public class CSVService {
                     continue;
                 }
                 String[] values = line.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
+                
+                // Imprimir la cantidad de columnas para depuración
+                System.out.println("Número de columnas en esta línea: " + values.length);
+                
                 for (int i = 0; i < values.length; i++) {
                     values[i] = values[i].replaceAll("^\"|\"$", "");
                     System.out.println("Valor " + i + ": " + values[i]);
                 }
                 System.out.println("Valores: " + java.util.Arrays.toString(values));
                 
+                // Validar que haya suficientes columnas antes de acceder a ellas
+                if (values.length < 13) {
+                    System.out.println("Error: La línea no tiene suficientes columnas, se omitirá.");
+                    continue;
+                }
+
                 // Convertir valores numéricos de forma segura
                 Integer quantity = convertToInteger(values[6]);
                 Integer quantityCompleted = convertToInteger(values[7]);
-                Integer quantityScrapped = (values[8].isEmpty()) ? 0 : convertToInteger(values[8]);
-                Integer quantityRemaining = (values[9].isEmpty()) ? 0 : convertToInteger(values[9]);
-                String dateClosed = (values[12].isEmpty()) ? "null" : values[12];
-                
+                Integer quantityScrapped = (values.length > 8 && !values[8].isEmpty()) ? convertToInteger(values[8]) : 0;
+                Integer quantityRemaining = (values.length > 9 && !values[9].isEmpty()) ? convertToInteger(values[9]) : 0;
+                String dateClosed = (values.length > 12 && !values[12].isEmpty()) ? values[12] : "null";
+
+                // Calcular el nuevo atributo basado en operación matemática
+                Double yield = (quantity != null && quantity > 0) ? (double) quantityCompleted / quantity : 0.0;
+
+                // Asegurar que no accedemos fuera de los límites del array
+                String extraColumn = (values.length > 14) ? values[14] : "N/A";
+
                 // Crear el objeto ItemOracle
                 ItemOracle itemOracle = new ItemOracle(
                         null,                 // ID se genera automáticamente
@@ -67,12 +83,13 @@ public class CSVService {
                         values[5],            // AssemblyDescription
                         quantity,             // Quantity
                         quantityCompleted,    // QuantityCompleted
+                        yield,                // Yield calculado
                         quantityScrapped,     // QuantityScrapped
                         quantityRemaining,    // QuantityRemaining
-                        values[10],           // StartDate
-                        values[11],           // DateCompleted
+                        values[11],           // StartDate
+                        values[12],           // DateCompleted
                         dateClosed,           // DateClosed
-                        values[13]            // Extra Column
+                        extraColumn           // Nueva columna
                 );
                 
                 // Verificar si ya existe un registro idéntico

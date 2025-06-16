@@ -30,12 +30,15 @@ public class ItemController {
         @RequestParam(required = false) String type,
         @RequestParam(required = false) String assembly,
         @RequestParam(required = false) String assemblyDescription,
-        @RequestParam(required = false) Integer quantityMin,
-        @RequestParam(required = false) Integer quantityMax,
+        @RequestParam(required = false) String quantityMin,
+        @RequestParam(required = false) String quantityMax,
         @RequestParam(required = false) String dateStart,
-        @RequestParam(required = false) String dateEnd
+        @RequestParam(required = false) String dateEnd,
+        @RequestParam(required = false) String assemblyStartingWith,
+        @RequestParam(required = false) String jobEndingWith
+
     ) {
-        List<ItemOracle> results = itemService.searchItems(job, type, assembly, assemblyDescription, quantityMin, quantityMax, dateStart, dateEnd);
+        List<ItemOracle> results = itemService.searchItems(job, type, assembly, assemblyDescription, quantityMin, quantityMax, dateStart, dateEnd, assemblyStartingWith, jobEndingWith);
         return ResponseEntity.ok(results);
     }
 }

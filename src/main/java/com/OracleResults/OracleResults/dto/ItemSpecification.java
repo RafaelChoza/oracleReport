@@ -8,8 +8,8 @@ import java.util.List;
 public class ItemSpecification {
 
     public static Specification<ItemOracle> filterItems(String job, String type, String assembly,
-                                                        String assemblyDescription, Integer quantityMin,
-                                                        Integer quantityMax, String dateStart, String dateEnd) {
+            String assemblyDescription, String quantityMin,
+            String quantityMax, String dateStart, String dateEnd, String assemblyStartingWith, String jobEndingWith) {
         return (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
 
@@ -41,8 +41,15 @@ public class ItemSpecification {
                 predicates.add(cb.between(root.get("dateCompleted"), dateStart, dateEnd));
             }
 
+            if (assemblyStartingWith != null && !assemblyStartingWith.isEmpty()) {
+                predicates.add(cb.like(root.get("assembly"), assemblyStartingWith + "%"));
+            }
+
+            if (jobEndingWith != null && !jobEndingWith.isEmpty()) {
+                predicates.add(cb.like(root.get("job"), "%" + jobEndingWith));
+            }
+
             return cb.and(predicates.toArray(new Predicate[0]));
         };
     }
 }
-

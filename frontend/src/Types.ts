@@ -8,6 +8,7 @@ export type ItemOracleType = {
     assemblyDescription: string,
     quantity: number,
     quantityCompleted: number,
+    yield: number,
     quantityScrapped: number,
     quantityRemaining: number,
     startDate: string,
