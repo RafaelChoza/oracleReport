@@ -130,6 +130,13 @@ export default function DataFilter() {
                         />
                         <input
                             className="w-full border border-cyan-500 p-2 bg-gray-800 text-cyan-300 text-sm rounded shadow-[inset_0_0_5px_rgba(0,255,255,0.3)] mb-2"
+                            type="text"
+                            name="assemblyDescriptionContains"
+                            placeholder="Escribe una palabra para filtrar"
+                            onChange={handleChange}
+                        />
+                        <input
+                            className="w-full border border-cyan-500 p-2 bg-gray-800 text-cyan-300 text-sm rounded shadow-[inset_0_0_5px_rgba(0,255,255,0.3)] mb-2"
                             type="number"
                             name="quantity"
                             placeholder="Cantidad surtida"

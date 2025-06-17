@@ -36,9 +36,10 @@ public class ItemService {
             String dateStart,
             String dateEnd,
             String assemblyStartingWith,
-            String jobEndingWith) {
+            String jobEndingWith,
+            String assemblyDescriptionContains) {
         Specification<ItemOracle> spec = ItemSpecification.filterItems(job, type, assembly, assemblyDescription,
-                quantityMin, quantityMax, dateStart, dateEnd, assemblyStartingWith, jobEndingWith);
+                quantityMin, quantityMax, dateStart, dateEnd, assemblyStartingWith, jobEndingWith, assemblyDescriptionContains);
                 job = job != null && !job.isBlank() ? job : null;
                 type = type != null && !type.isBlank() ? type : null;
                 assembly = assembly != null && !assembly.isBlank() ? assembly : null;
@@ -49,7 +50,7 @@ public class ItemService {
                 dateEnd = dateEnd != null && !dateEnd.isBlank() ? dateEnd : null;
                 assemblyStartingWith = assemblyStartingWith != null && !assemblyStartingWith.isBlank() ? assemblyStartingWith : null;
                 jobEndingWith = jobEndingWith != null && !jobEndingWith.isBlank() ? jobEndingWith : null;
-                
+                assemblyDescriptionContains = assemblyDescriptionContains != null && !assemblyDescriptionContains.isBlank() ? assemblyDescriptionContains : null;                
                 Integer quantityMinInt = (quantityMin != null && !quantityMin.isBlank()) ? Integer.parseInt(quantityMin) : 0;
                 Integer quantityMaxInt = (quantityMax != null && !quantityMax.isBlank()) ? Integer.parseInt(quantityMax) : 0;
                 System.out.println("Se reciben los parametros: " + job + type + assembly + assemblyDescription + quantityMinInt + quantityMaxInt + dateStart + dateEnd);

@@ -9,7 +9,7 @@ public class ItemSpecification {
 
     public static Specification<ItemOracle> filterItems(String job, String type, String assembly,
             String assemblyDescription, String quantityMin,
-            String quantityMax, String dateStart, String dateEnd, String assemblyStartingWith, String jobEndingWith) {
+            String quantityMax, String dateStart, String dateEnd, String assemblyStartingWith, String jobEndingWith, String assemblyDescriptionContains) {
         return (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
 
@@ -47,6 +47,10 @@ public class ItemSpecification {
 
             if (jobEndingWith != null && !jobEndingWith.isEmpty()) {
                 predicates.add(cb.like(root.get("job"), "%" + jobEndingWith));
+            }
+
+            if(assemblyDescriptionContains != null && !assemblyDescriptionContains.isEmpty()) {
+                predicates.add(cb.like(root.get("description"), "%" + assemblyDescriptionContains));
             }
 
             return cb.and(predicates.toArray(new Predicate[0]));
